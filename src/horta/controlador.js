@@ -1,4 +1,5 @@
 var mongo = require('./../drivers/mongodb')
+// const Gpio = require('onoff').Gpio;
 
 let HortaControlador = function(){
     this.bercarios = {
@@ -18,6 +19,7 @@ const sleep = (milliseconds) => {
  * Inicia o clico de funcionamento da Horta
  **/  
 HortaControlador.prototype.run = async function(){
+    // const valvulaSaida = new Gpio(portaSaida, 'out')
   
 
     while(true){
@@ -34,8 +36,7 @@ HortaControlador.prototype.run = async function(){
         
         console.log("Esvaziando...")  
         await sleep(this.bercarios.tempoInundacao*1000) //tempo que os bercarios ficam inundados 
-           
-    
+        //valvulaSaida.writeSync(false)
 
     }
 }
@@ -52,11 +53,14 @@ HortaControlador.prototype.setTimers = function(timers){
  */
 HortaControlador.prototype.inundaPorta = async function(porta){
     console.log("Abrindo valvula "+porta)
+    // const valvula = new Gpio(porta, 'out')
+    // valvula.writeSync(true)
     this.bombaLigada = true //A bomba ligada bombei agua até o distribuidor.
     console.log("Bomba iniciada: "+this.bombaLigada)
 
     await sleep(this.bercarios.tempoAbastecimento*1000) //enchendo
     this.bombaLigada = false
+    // valvula.writeSync(false)
     console.log("Bomba iniciada: "+this.bombaLigada)
     console.log("Fechando valvula "+porta)
 
