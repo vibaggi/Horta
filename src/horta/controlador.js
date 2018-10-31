@@ -1,11 +1,14 @@
 var mongo = require('./../drivers/mongodb')
 const Gpio = require('onoff').Gpio;
 
+
+
 let HortaControlador = function(){
     this.bercarios = {
-        portasRaspberry:    [1,2,3],
+        portasRaspberry:    [16],
         tempoInundacao:     300,
-        tempoAbastecimento: 26
+        tempoAbastecimento: 26,
+        portaSaida: 6
     }
     this.bombaLigada = false
 }
