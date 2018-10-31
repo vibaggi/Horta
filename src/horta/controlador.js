@@ -5,6 +5,7 @@ const Gpio = require('onoff').Gpio;
 
 let HortaControlador = function(){
     this.bercarios = {
+        
         portasRaspberry:    [16],
         tempoInundacao:     300,
         tempoAbastecimento: 26,
