@@ -4,14 +4,15 @@ const Gpio = require('onoff').Gpio;
 
 
 let HortaControlador = function(){
-    this.bercarios = {
-        
-        portasRaspberry:    [17],
-        tempoInundacao:     300,
-        tempoAbastecimento: 26,
-        portaSaida: 27
-    }
-    this.bombaLigada = false
+    this.bercarios = [
+        {
+            portaRaspberry:    17,
+            tempoAbastecimento: 26
+        }
+    ]
+    this.tempoInundacao = 300;
+    this.portaSaida = 27 //Valvula que esvazia todos os níveis
+    this.portaBomba = 18 //Rele que liga a bomba 
 }
 
 const sleep = (milliseconds) => {
@@ -23,50 +24,68 @@ const sleep = (milliseconds) => {
  * Inicia o clico de funcionamento da Horta
  **/  
 HortaControlador.prototype.run = async function(){
-    const valvulaSaida = new Gpio(this.bercarios.portaSaida, 'out')
-  
+    //A valvula de Saida quando aberta esvazia todos os níveis de uma vez
+    const valvulaSaida  = new Gpio(this.portaSaida, 'out')
+    const bomba         = new Gpio(this.portaBomba, 'out')
+    //Todas as portas são da saida para acionar os Reles
 
+   
     while(true){
+        
         valvulaSaida.writeSync(0) //fechando valvula de esvaziamento
         console.log("Bomba Desligada")
         console.log("Sistema em espera")
         await sleep(4000) //simulando espera
         
+         //Ligamos a bomba
+        bomba.writeSync(1)
+
+        //A bomba é ligada
         console.log("Regando")
-        console.log(this.bercarios.portasRaspberry.length)
-        for(i = 0; i < this.bercarios.portasRaspberry.length; i++){
-           await this.inundaPorta(this.bercarios.portasRaspberry[i])
+
+        //Inicia-se o chaveamento das valvulas para abastecer cada nível
+        for(i = 0; i < this.bercarios.length; i++){
+           await this.inundaBercario(this.bercarios[i])
         }
+
+        //bomba é desligada
+        bomba.writeSync(0)
         
-        console.log("Esvaziando...")  
-        await sleep(this.bercarios.tempoInundacao*1000) //tempo que os bercarios ficam inundados 
+        console.log("Espera...") 
+        await sleep(this.tempoInundacao*1000) //tempo que os bercarios ficam inundados 
+        console.log("Esvaziando...") 
         valvulaSaida.writeSync(1) //esvaziando
         await sleep(10000)
 
     }
+   
 }
 
-HortaControlador.prototype.setTimers = function(timers){
-    console.log('Alteração no tempo de enchimento de cano: ',timers)
-    this.bercarios.tempoAbastecimento   = timers.tempoAbastecimento
-    this.bercarios.tempoInundacao       = timers.tempoInundacao
+HortaControlador.prototype.setTimers = function(configuracao){
+    console.log('Alterando configuração da Horta')
+    this.tempoInundacao         = configuracao.tempoInundacao
+    this.portaSaida             = configuracao.portaSaida
+    this.portaBomba             = configuracao.portaBomba
+    this.bercarios              = configuracao.bercarios
+    console.log('Salvar alterações no MONGO')
+    //TODO: salvar alterações no mongo para recuperar mais tarde.
 }
 
 /**
  * Inunda o bercario de acordo com a porta informada
  * @param {*} porta é a porta do raspberry, que está controlando algum dos bercarios.
  */
-HortaControlador.prototype.inundaPorta = async function(porta){
-    console.log("Abrindo valvula "+porta)
-    const valvula = new Gpio(porta, 'out')
+HortaControlador.prototype.inundaBercario = async function(bercario){
+    console.log("Abrindo valvula "+bercario.portaRaspberry)
+    const valvula = new Gpio(bercario.portaRaspberry, 'out')
     valvula.writeSync(1)
     console.log("Bomba iniciada")
-    await sleep(this.bercarios.tempoAbastecimento*1000) //enchendo
+    //TODO: iniciar bomba
+    await sleep(this.bercario.tempoAbastecimento*1000) //enchendo
     valvula.writeSync(0)
-    console.log("Bomba iniciada")
-    console.log("Fechando valvula"+porta)
+    console.log("Fechando valvula"+bercario.portaRaspberry)
 
-    mongo.registrarAbastecimento(porta) //registra no mongo a porta e a data inundada
+    mongo.registrarAbastecimento(bercario.portaRaspberry) //registra no mongo a porta e a data inundada
     await sleep(1000) //tempo para agua terminar de escoar
 }
 
