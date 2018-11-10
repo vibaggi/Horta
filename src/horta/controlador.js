@@ -32,13 +32,13 @@ HortaControlador.prototype.run = async function(){
    
     while(true){
         
-        valvulaSaida.writeSync(0) //fechando valvula de esvaziamento
+        valvulaSaida.writeSync(1) //fechando valvula de esvaziamento
         console.log("Bomba Desligada")
         console.log("Sistema em espera")
         await sleep(4000) //simulando espera
         
          //Ligamos a bomba
-        bomba.writeSync(1)
+        bomba.writeSync(0)
 
         //A bomba é ligada
         console.log("Regando")
@@ -49,12 +49,12 @@ HortaControlador.prototype.run = async function(){
         }
 
         //bomba é desligada
-        bomba.writeSync(0)
+        bomba.writeSync(1)
         
         console.log("Espera...") 
         await sleep(this.tempoInundacao*1000) //tempo que os bercarios ficam inundados 
         console.log("Esvaziando...") 
-        valvulaSaida.writeSync(1) //esvaziando
+        valvulaSaida.writeSync(0) //esvaziando
         await sleep(10000)
 
     }
@@ -78,11 +78,11 @@ HortaControlador.prototype.setTimers = function(configuracao){
 HortaControlador.prototype.inundaBercario = async function(bercario){
     console.log("Abrindo valvula "+bercario.portaRaspberry)
     const valvula = new Gpio(bercario.portaRaspberry, 'out')
-    valvula.writeSync(1)
+    valvula.writeSync(0)
     console.log("Bomba iniciada")
     //TODO: iniciar bomba
     await sleep(bercario.tempoAbastecimento*1000) //enchendo
-    valvula.writeSync(0)
+    valvula.writeSync(1)
     console.log("Fechando valvula"+bercario.portaRaspberry)
 
     mongo.registrarAbastecimento(bercario.portaRaspberry) //registra no mongo a porta e a data inundada
