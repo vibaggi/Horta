@@ -81,7 +81,7 @@ HortaControlador.prototype.inundaBercario = async function(bercario){
     valvula.writeSync(1)
     console.log("Bomba iniciada")
     //TODO: iniciar bomba
-    await sleep(this.bercario.tempoAbastecimento*1000) //enchendo
+    await sleep(bercario.tempoAbastecimento*1000) //enchendo
     valvula.writeSync(0)
     console.log("Fechando valvula"+bercario.portaRaspberry)
 
