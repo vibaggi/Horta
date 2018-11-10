@@ -23,7 +23,7 @@ const sleep = (milliseconds) => {
  * Inicia o clico de funcionamento da Horta
  **/  
 HortaControlador.prototype.run = async function(){
-    const valvulaSaida = new Gpio(portaSaida, 'out')
+    const valvulaSaida = new Gpio(this.bercarios.portaSaida, 'out')
   
 
     while(true){
