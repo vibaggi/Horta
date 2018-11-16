@@ -37,7 +37,26 @@ MongoClient.connect(url, function(err, db) {
         })
     })
   }
+
+  function getBercarios(){
+    return new Promise(function(resolve, reject){
+      MongoClient.connect(url, function(err, db) {
+        var dbo = db.db("acessodb");
+        const collection = dbo.collection('bercarios');
+
+        collection.find({"_id": 1}).toArray(function(err, docs) {
+          // assert.equal(err, null);
+          console.log("Found the following records");
+          // console.log(docs)
+          resolve(docs);
+        });
+
+    });
+
+    })
+  }
   module.exports = {
     registrarAbastecimento: registrarAbastecimento,
-    getListaAbastecimento: getListaAbastecimento
+    getListaAbastecimento: getListaAbastecimento,
+    getBercarios: getBercarios
   }

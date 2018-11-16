@@ -4,15 +4,25 @@ const Gpio = require('onoff').Gpio;
 
 
 let HortaControlador = function(){
-    this.bercarios = [
-        {
-            portaRaspberry:    17,
-            tempoAbastecimento: 26
-        }
-    ]
-    this.tempoInundacao = 300;
-    this.portaSaida = 27 //Valvula que esvazia todos os níveis
-    this.portaBomba = 18 //Rele que liga a bomba 
+    // this.bercarios = [
+    //     {
+    //         portaRaspberry:    17,
+    //         tempoAbastecimento: 26
+    //     }
+    // ]
+    // this.tempoInundacao = 300;
+    // this.portaSaida = 27 //Valvula que esvazia todos os níveis
+    // this.portaBomba = 18 //Rele que liga a bomba 
+
+    //Buscando dados do MLAB
+    mongo.getBercarios().then(resp=>{
+        var data = resp[0]
+        this.bercarios = data.bercarios
+        this.tempoInundacao = data.tempoInundacao
+        this.tempoAbastecimento = data.tempoAbastecimento
+        this.portaSaida = data.portaSaida
+    })
+
 }
 
 const sleep = (milliseconds) => {
