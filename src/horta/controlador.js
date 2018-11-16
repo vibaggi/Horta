@@ -4,36 +4,34 @@ const Gpio = require('onoff').Gpio;
 
 
 let HortaControlador = function(){
-    // this.bercarios = [
-    //     {
-    //         portaRaspberry:    17,
-    //         tempoAbastecimento: 26
-    //     }
-    // ]
-    // this.tempoInundacao = 300;
-    // this.portaSaida = 27 //Valvula que esvazia todos os níveis
-    // this.portaBomba = 18 //Rele que liga a bomba 
-
-    //Buscando dados do MLAB
-    mongo.getBercarios().then(resp=>{
-        var data = resp[0]
-        this.bercarios = data.bercarios
-        this.tempoInundacao = data.tempoInundacao
-        this.tempoAbastecimento = data.tempoAbastecimento
-        this.portaSaida = data.portaSaida
-    })
 
 }
+
 
 const sleep = (milliseconds) => {
     return new Promise(resolve => setTimeout(resolve, milliseconds))
   }
 
 
+  HortaControlador.prototype.getBercarios = async function(){
+    //Buscando dados do MLAB
+    
+    var data =  (await mongo.getBercarios())[0]
+    this.bercarios = data.bercarios
+    this.tempoInundacao = data.tempoInundacao
+    this.tempoAbastecimento = data.tempoAbastecimento
+    this.portaSaida = data.portaSaida
+    
+  }
+
 /**
  * Inicia o clico de funcionamento da Horta
  **/  
 HortaControlador.prototype.run = async function(){
+
+    //buscar informacoes no banco de dados
+    await this.getBercarios()
+
     //A valvula de Saida quando aberta esvazia todos os níveis de uma vez
     const valvulaSaida  = new Gpio(this.portaSaida, 'out')
     const bomba         = new Gpio(this.portaBomba, 'out')
