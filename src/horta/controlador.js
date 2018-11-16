@@ -21,6 +21,7 @@ const sleep = (milliseconds) => {
     this.tempoInundacao = data.tempoInundacao
     this.tempoAbastecimento = data.tempoAbastecimento
     this.portaSaida = data.portaSaida
+    this.portaBomba = data.portaBomba
     
   }
 
